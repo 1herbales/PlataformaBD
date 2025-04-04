@@ -26,6 +26,17 @@ namespace BD.Controllers
             var Doctorados = _docenteTitulosServicio.GetDoctorados(doctoradoqf);
             var doctoradosDTOS = _mapper.Map<IEnumerable<DoctoradoDTO>>(Doctorados);
             var response = new ApiResponse<IEnumerable<DoctoradoDTO>>(doctoradosDTOS);
+            var metadata = new
+            {
+                Doctorados.TotalCount,
+                Doctorados.PageSize,
+                Doctorados.PageNumber,
+                Doctorados.TotalPages,
+                Doctorados.HasNext,
+                Doctorados.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

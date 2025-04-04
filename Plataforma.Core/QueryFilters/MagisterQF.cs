@@ -21,5 +21,8 @@ namespace Plataforma.Core.QueryFilters
         public string? ResolucionConvalidacion { get; set; }
 
         public DateOnly? FechaConvalidacion { get; set; }
+
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

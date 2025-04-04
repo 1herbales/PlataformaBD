@@ -25,6 +25,17 @@ namespace BD.Controllers
             var Egresos =  _docentePlantumServicio.GetEgresos(egresoDocenteqf);
             var egresosDTOS = _mapper.Map<IEnumerable<EgresoDocenteDTO>>(Egresos);
             var response = new ApiResponse<IEnumerable<EgresoDocenteDTO>>(egresosDTOS);
+            var metadata = new
+            {
+                Egresos.TotalCount,
+                Egresos.PageSize,
+                Egresos.PageNumber,
+                Egresos.TotalPages,
+                Egresos.HasNext,
+                Egresos.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

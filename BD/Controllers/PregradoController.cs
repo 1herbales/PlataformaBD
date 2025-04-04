@@ -26,7 +26,19 @@ namespace BD.Controllers
             var Pregrados = _docenteTitulosServicio.GetPregrados(pregradoqf);
             var pregradosDTOS = _mapper.Map<IEnumerable<PregradoDTO>>(Pregrados);
             var response = new ApiResponse<IEnumerable<PregradoDTO>>(pregradosDTOS);
+            var metadata = new
+            {
+                Pregrados.TotalCount,
+                Pregrados.PageSize,
+                Pregrados.PageNumber,
+                Pregrados.TotalPages,
+                Pregrados.HasNext,
+                Pregrados.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
+        }
         }
 
 

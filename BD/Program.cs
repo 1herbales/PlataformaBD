@@ -26,11 +26,7 @@ builder.Services.AddTransient<IDocentePlantumRepositorio, DocentePlantumReposito
 builder.Services.AddTransient<IDocenteTitulosRepositorio, DocenteTitulosRepository>();
 builder.Services.AddTransient<IDocenteTitulosServicio, DocenteTitulosServicio>();
 
-
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-
-
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

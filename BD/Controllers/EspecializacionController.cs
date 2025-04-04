@@ -28,6 +28,17 @@ namespace BD.Controllers
             var Especializaciones = _docenteTitulosServicio.GetEspecializaciones(especializacionqf);
             var especializacionesDTOS = _mapper4.Map<IEnumerable<EspecializacionDTO>>(Especializaciones);
             var response = new ApiResponse<IEnumerable<EspecializacionDTO>>(especializacionesDTOS);
+            var metadata = new
+            {
+                Especializaciones.TotalCount,
+                Especializaciones.PageSize,
+                Especializaciones.PageNumber,
+                Especializaciones.TotalPages,
+                Especializaciones.HasNext,
+                Especializaciones.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

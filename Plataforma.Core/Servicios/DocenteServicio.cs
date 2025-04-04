@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
@@ -75,15 +76,13 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteRepositorio.GetDatoPersonal(DocenteId);
         }
 
-        public object GetDatosPersonales(DocenteDatosPersonaleQF docenteDatosPersonaleqf)
+        public PagedList<DocenteDatosPersonale> GetDatosPersonales(DocenteDatosPersonaleQF docenteDatosPersonaleqf)
         {
             var query = _unitOfWork.DocenteRepositorio.GetDatosPersonales();
-            if (docenteDatosPersonaleqf != null)
-            {
+            
                 if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.Sexo))
                 {
                     query = query.Where(d => d.Sexo.Contains(docenteDatosPersonaleqf.Sexo, StringComparison.OrdinalIgnoreCase));
-
                 }
                 if (docenteDatosPersonaleqf.Edad > 0)
                 {
@@ -109,8 +108,10 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.NumeroContacto.Contains(docenteDatosPersonaleqf.NumeroContacto, StringComparison.OrdinalIgnoreCase));
                 }
-            }
-            return query.ToList();
+
+            var pagedDocentesDatosPersonale = PagedList<DocenteDatosPersonale>.Create(query, docenteDatosPersonaleqf.PageNumber, docenteDatosPersonaleqf.PageSize);
+            return pagedDocentesDatosPersonale;
+
         }
 
         public async Task<Docente> GetDocente(long DocenteId)
@@ -123,11 +124,10 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteRepositorio.GetDocenteCatedra(DocenteId);
         }
 
-        public IEnumerable<DocenteCatedra> GetDocenteCatedras(DocenteCatedraQF docenteCatedraqf)
+        public PagedList<DocenteCatedra> GetDocenteCatedras(DocenteCatedraQF docenteCatedraqf)
         {
             var query = _unitOfWork.DocenteRepositorio.GetDocenteCatedras();
-            if (docenteCatedraqf != null)
-            {
+            
                 if (docenteCatedraqf.HorasContratadas.HasValue)
                 {
                     query = query.Where(d => d.HorasContratadas == docenteCatedraqf.HorasContratadas.Value);
@@ -157,8 +157,9 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.NumeroTarjetaProfesional.Contains(docenteCatedraqf.NumeroTarjetaProfesional, StringComparison.OrdinalIgnoreCase));
                 }
-            }
-            return query.ToList();
+
+            var pagedDocentesCatedra = PagedList<DocenteCatedra>.Create(query, docenteCatedraqf.PageNumber, docenteCatedraqf.PageSize);
+            return pagedDocentesCatedra;
         }
 
         public async Task<DocenteDetalle> GetDocenteDetalle(long DocenteId)
@@ -166,12 +167,10 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteRepositorio.GetDocenteDetalle(DocenteId);
         }
 
-        public IEnumerable<DocenteDetalle> GetDocenteDetalles(DocenteDetalleQF docenteDetalleqf)
+        public PagedList<DocenteDetalle> GetDocenteDetalles(DocenteDetalleQF docenteDetalleqf)
         {
             var query = _unitOfWork.DocenteRepositorio.GetDocenteDetalles();
-            // Apply any filtering or sorting logic here if needed
-            if (docenteDetalleqf != null)
-            {
+            
                 if (!string.IsNullOrEmpty(docenteDetalleqf.Modalidad))
                 {
                     query = query.Where(d => d.Modalidad.Contains(docenteDetalleqf.Modalidad, StringComparison.OrdinalIgnoreCase));
@@ -191,17 +190,16 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.ProgramaAdscrito.Contains(docenteDetalleqf.ProgramaAdscrito, StringComparison.OrdinalIgnoreCase));
                 }
-            }
-            return query.ToList();
+            var pagedDocentesDetalles = PagedList<DocenteDetalle>.Create(query, docenteDetalleqf.PageNumber, docenteDetalleqf.PageSize);
+            return pagedDocentesDetalles;
 
         }
 
-        public IEnumerable<Docente> GetDocentes(DocenteQF docenteqf)
+        public PagedList<Docente> GetDocentes(DocenteQF docenteqf)
         {
             var query = _unitOfWork.DocenteRepositorio.GetDocentes();
             // Apply any filtering or sorting logic here if needed
-            if (docenteqf != null)
-            {
+            
                 if (!string.IsNullOrEmpty(docenteqf.Nombre))
                 {
                     query = query.Where(d => d.Nombre.Contains(docenteqf.Nombre, StringComparison.OrdinalIgnoreCase));
@@ -210,29 +208,32 @@ namespace Plataforma.Core.Servicios
                 if (!string.IsNullOrEmpty(docenteqf.Apellidos))
                 {
                     query = query.Where(d => d.Apellidos.Contains(docenteqf.Apellidos, StringComparison.OrdinalIgnoreCase));
-                }    
+                }
 
                 if (!string.IsNullOrEmpty(docenteqf.NumeroIdentificacion))
                 {
                     query = query.Where(d => d.NumeroIdentificacion.Contains(docenteqf.NumeroIdentificacion));
                 }
 
-                if (!string.IsNullOrEmpty(docenteqf.TipoIdentificacion))
-                {
-                    query = query.Where(d => d.TipoIdentificacion.Contains(docenteqf.TipoIdentificacion, StringComparison.OrdinalIgnoreCase));
-                }
+            if (!string.IsNullOrEmpty(docenteqf.TipoIdentificacion))
+            {
+                query = query.Where(d => d.TipoIdentificacion.Contains(docenteqf.TipoIdentificacion, StringComparison.OrdinalIgnoreCase));
+            }
 
                 if (!string.IsNullOrEmpty(docenteqf.EmailInstitucional))
                 {
                     query = query.Where(d => d.EmailInstitucional.Contains(docenteqf.EmailInstitucional, StringComparison.OrdinalIgnoreCase));
                 }
-            }
-            return query.ToList();
+                var pagedDocentes = PagedList<Docente>.Create(query, docenteqf.PageNumber, docenteqf.PageSize);
+                return pagedDocentes;
         }
+            
+        
 
-        public Task InsertarDatoPersonal(DocenteDatosPersonale datoPersonal)
+        public async Task InsertarDatoPersonal(DocenteDatosPersonale datoPersonal)
         {
-            throw new NotImplementedException();
+            await _unitOfWork.DocenteRepositorio.InsertarDatoPersonal(datoPersonal);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task InsertarDocente(Docente docente)
@@ -253,19 +254,6 @@ namespace Plataforma.Core.Servicios
             await _unitOfWork.SaveChangesAsync();
         }
 
-        Task<bool> IDocenteServicio.ActualizarDatoPersonal(DocenteDatosPersonale datoPersonal)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<DocenteDatosPersonale> IDocenteServicio.GetDatoPersonal(long DocenteId)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<DocenteDatosPersonale> IDocenteServicio.GetDatosPersonales(DocenteDatosPersonaleQF docenteDatosPersonaleqf)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

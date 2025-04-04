@@ -26,6 +26,17 @@ namespace BD.Controllers
             var Categorias =  _docentePlantumServicio.GetCategorias(categoriaDocenteqf);
             var categoriasDTOS = _mapper.Map<IEnumerable<CategoriaDocenteDTO>>(Categorias);
             var response = new ApiResponse<IEnumerable<CategoriaDocenteDTO>>(categoriasDTOS);
+            var metadata = new
+            {
+                Categorias.TotalCount,
+                Categorias.PageSize,
+                Categorias.PageNumber,
+                Categorias.TotalPages,
+                Categorias.HasNext,
+                Categorias.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

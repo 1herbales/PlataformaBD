@@ -19,5 +19,8 @@ namespace Plataforma.Core.QueryFilters
         public string? NivelAcademico { get; set; }
 
         public string? NumeroTarjetaProfesional { get; set; }
+
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

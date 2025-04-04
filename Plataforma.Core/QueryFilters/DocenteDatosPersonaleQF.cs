@@ -24,5 +24,8 @@ namespace Plataforma.Core.QueryFilters
 
         public string NumeroContacto { get; set; } = null!;
 
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+
     }
 }

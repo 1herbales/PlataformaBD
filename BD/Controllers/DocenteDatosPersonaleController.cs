@@ -1,15 +1,18 @@
 ﻿using AutoMapper;
 using BD.Response;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
-using Plataforma.Core.Servicios;
+using System;
+using System.Collections.Generic;
+using System.Net;
+
 
 namespace BD.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
     public class DocenteDatosPersonaleController(IDocenteServicio docenteServicio, IMapper mapper5) : Controller
     {
@@ -25,7 +28,19 @@ namespace BD.Controllers
             var DatosPersonales = _docenteServicio.GetDatosPersonales(docenteDatosPersonaleqf);
             var datosPersonalesDTOS = _mapper5.Map<IEnumerable<DocenteDatosPersonalesDTO>>(DatosPersonales);
             var response = new ApiResponse<IEnumerable<DocenteDatosPersonalesDTO>>(datosPersonalesDTOS);
+            var metadata = new
+            {
+                DatosPersonales.TotalCount,
+                DatosPersonales.PageSize,
+                DatosPersonales.PageNumber,
+                DatosPersonales.TotalPages,
+                DatosPersonales.HasNext,
+                DatosPersonales.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
+            
         }
 
         [HttpGet("{DocenteId}")]

@@ -26,7 +26,19 @@ namespace BD.Controllers
             var DocentesDetalles = _docenteServicio.GetDocenteDetalles(docenteDetalleqf);
             var docentesDetallesDTOS = _mapper3.Map<IEnumerable<DocenteDetalleDTO>>(DocentesDetalles);
             var response = new ApiResponse<IEnumerable<DocenteDetalleDTO>>(docentesDetallesDTOS);
+            var metadata = new
+            {
+                DocentesDetalles.TotalCount,
+                DocentesDetalles.PageSize,
+                DocentesDetalles.PageNumber,
+                DocentesDetalles.TotalPages,
+                DocentesDetalles.HasNext,
+                DocentesDetalles.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
+            
         }
 
         [HttpGet("{DocenteId}")]

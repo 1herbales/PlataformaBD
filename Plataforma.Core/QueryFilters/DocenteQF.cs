@@ -17,5 +17,10 @@ namespace Plataforma.Core.QueryFilters
         public string? TipoIdentificacion { get; set; } 
 
         public string? EmailInstitucional { get; set; }
+
+        public int PageNumber { get; set; } 
+        public int PageSize { get; set; } 
+
+
     }
 }

@@ -16,5 +16,8 @@ namespace Plataforma.Core.QueryFilters
         public DateOnly? FechaAsociado { get; set; }
 
         public DateOnly? FechaTitular { get; set; }
+
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

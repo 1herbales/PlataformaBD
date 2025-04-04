@@ -14,7 +14,9 @@ namespace Plataforma.Core.QueryFilters
 
         public string? Municipio { get; set; } 
 
-        public string? Modalidad { get; set; } 
+        public string? Modalidad { get; set; }
 
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

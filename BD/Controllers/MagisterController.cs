@@ -27,6 +27,17 @@ namespace BD.Controllers
             var Magisters = _docenteTitulosServicio.GetMagisters(magisterqf);
             var magistersDTOS = _mapper.Map<IEnumerable<MagisterDTO>>(Magisters);
             var response = new ApiResponse<IEnumerable<MagisterDTO>>(magistersDTOS);
+            var metadata = new
+            {
+                Magisters.TotalCount,
+                Magisters.PageSize,
+                Magisters.PageNumber,
+                Magisters.TotalPages,
+                Magisters.HasNext,
+                Magisters.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

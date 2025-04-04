@@ -13,5 +13,8 @@ namespace Plataforma.Core.QueryFilters
         public string? Universidad { get; set; }
 
         public DateOnly? FechaFinalizacion { get; set; }
+
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
 }

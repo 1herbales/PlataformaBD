@@ -84,8 +84,8 @@ namespace Plataforma.Core.Servicios
         {
             var query = _unitOfWork.DocenteTitulosRepositorio.GetPregrados();
             // Apply any filtering or sorting logic here if needed
-            if (pregradoqf != null)
-            {
+            
+            
                 if (!string.IsNullOrEmpty(pregradoqf.Titulo))
                 {
                     query = query.Where(d => d.Titulo.Contains(pregradoqf.Titulo, StringComparison.OrdinalIgnoreCase));
@@ -98,7 +98,7 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.FechaFinalizacion == pregradoqf.FechaFinalizacion);
                 }
-            }
+            
             return query.ToList();
         }
 

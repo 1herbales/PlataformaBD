@@ -26,4 +26,6 @@ public partial class DocenteDatosPersonale
     public long DocenteId { get; set; }
 
     public virtual Docente Docente { get; set; } = null!;
+
+
 }

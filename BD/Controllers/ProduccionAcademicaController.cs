@@ -26,8 +26,20 @@ namespace BD.Controllers
             var Producciones = _docentePlantumServicio.GetProducciones(produccionAcademicaqf);
             var produccionesDTOS = _mapper.Map<IEnumerable<ProduccionAcademicaDTO>>(Producciones);
             var response = new ApiResponse<IEnumerable<ProduccionAcademicaDTO>>(produccionesDTOS);
+            var metadata = new
+            {
+                Producciones.TotalCount,
+                Producciones.PageSize,
+                Producciones.PageNumber,
+                Producciones.TotalPages,
+                Producciones.HasNext,
+                Producciones.HasPrevious
+
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
+        
 
         [HttpGet("{DocenteId}")]
         public async Task<IActionResult> GetCategoria(long DocenteId)

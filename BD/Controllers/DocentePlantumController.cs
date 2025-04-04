@@ -23,10 +23,6 @@ namespace BD.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-
-
         public IActionResult GetDocentesPlantum([FromQuery] DocentePlantumQF docentePlantumqf)
         {
             var DocentesPlantum = _docentePlantumServicio.GetDocentesPlantum(docentePlantumqf);
