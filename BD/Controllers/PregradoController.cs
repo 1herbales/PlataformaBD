@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 using Plataforma.Core.Servicios;
 
 namespace BD.Controllers
@@ -17,9 +19,11 @@ namespace BD.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet]
-        public IActionResult GetPregrados()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult GetPregrados([FromQuery] PregradoQF pregradoqf)
         {
-            var Pregrados = _docenteTitulosServicio.GetPregrados();
+            var Pregrados = _docenteTitulosServicio.GetPregrados(pregradoqf);
             var pregradosDTOS = _mapper.Map<IEnumerable<PregradoDTO>>(Pregrados);
             var response = new ApiResponse<IEnumerable<PregradoDTO>>(pregradosDTOS);
             return Ok(response);

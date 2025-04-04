@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 
 
 namespace BD.Controllers
@@ -17,9 +19,11 @@ namespace BD.Controllers
 
 
         [HttpGet]
-        public IActionResult GetCategorias()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult GetCategorias([FromQuery] CategoriaDocenteQF categoriaDocenteqf)
         {
-            var Categorias =  _docentePlantumServicio.GetCategorias();
+            var Categorias =  _docentePlantumServicio.GetCategorias(categoriaDocenteqf);
             var categoriasDTOS = _mapper.Map<IEnumerable<CategoriaDocenteDTO>>(Categorias);
             var response = new ApiResponse<IEnumerable<CategoriaDocenteDTO>>(categoriasDTOS);
             return Ok(response);

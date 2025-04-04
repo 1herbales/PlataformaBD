@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 
 namespace BD.Controllers
 {
@@ -16,9 +18,12 @@ namespace BD.Controllers
 
 
         [HttpGet]
-        public IActionResult GetProducciones()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
+        public IActionResult GetProducciones([FromQuery] ProduccionAcademicaQF produccionAcademicaqf)
         {
-            var Producciones = _docentePlantumServicio.GetProducciones();
+            var Producciones = _docentePlantumServicio.GetProducciones(produccionAcademicaqf);
             var produccionesDTOS = _mapper.Map<IEnumerable<ProduccionAcademicaDTO>>(Producciones);
             var response = new ApiResponse<IEnumerable<ProduccionAcademicaDTO>>(produccionesDTOS);
             return Ok(response);

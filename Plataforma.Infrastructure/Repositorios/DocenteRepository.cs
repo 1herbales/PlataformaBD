@@ -108,6 +108,32 @@ namespace Plataforma.Infrastructure.Repositorios
             
         }
 
-        
+        public IEnumerable<DocenteDatosPersonale> GetDatosPersonales()
+        {
+            return _context.DocenteDatosPersonales.AsEnumerable();
+        }
+
+        public async Task<DocenteDatosPersonale> GetDatoPersonal(long DocenteId)
+        {
+            return await _context.DocenteDatosPersonales.FindAsync(DocenteId);
+        }
+
+        public async Task InsertarDatoPersonal(DocenteDatosPersonale datoPersonal)
+        {
+            await _context.DocenteDatosPersonales.AddAsync(datoPersonal);
+
+        }
+
+        public void ActualizarDatoPersonal(DocenteDatosPersonale datoPersonal)
+        {
+            _context.DocenteDatosPersonales.Update(datoPersonal);
+        }
+
+        public async Task EliminarDatoPersonal(long DocenteId)
+        {
+            var currentDatoPersonal = await GetDatoPersonal(DocenteId);
+            _context.DocenteDatosPersonales.Remove(currentDatoPersonal);
+        }
+
     }
 }

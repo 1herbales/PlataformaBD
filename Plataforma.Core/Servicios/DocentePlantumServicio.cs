@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 
 
 namespace Plataforma.Core.Servicios
@@ -18,22 +19,148 @@ namespace Plataforma.Core.Servicios
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<ProduccionAcademica> GetProducciones()
+        public IEnumerable<ProduccionAcademica> GetProducciones(ProduccionAcademicaQF produccionAcademicaqf)
         {
-            return _unitOfWork.DocentePlantumRepositorio.GetProducciones();
-        }
+            var query = _unitOfWork.DocentePlantumRepositorio.GetProducciones();
+            if (produccionAcademicaqf != null)
+            {
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.ActaNumero))
+                {
+                    query = query.Where(p => p.ActaNumero.Contains(produccionAcademicaqf.ActaNumero, StringComparison.OrdinalIgnoreCase));
+                }
+                if (produccionAcademicaqf.FechaActa != null)
+                {
+                    query = query.Where(p => p.FechaActa == produccionAcademicaqf.FechaActa.Value);
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.TipoDePuntos))
+                {
+                    query = query.Where(p => p.TipoDePuntos.Contains(produccionAcademicaqf.TipoDePuntos, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.TipoDeProducto))
+                {
+                    query = query.Where(p => p.TipoDeProducto.Contains(produccionAcademicaqf.TipoDeProducto, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.RevistaPostgradoPremioEditorial))
+                {
+                    query = query.Where(p => p.RevistaPostgradoPremioEditorial.Contains(produccionAcademicaqf.RevistaPostgradoPremioEditorial, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.IssnIsbn))
+                {
+                    query = query.Where(p => p.IssnIsbn.Contains(produccionAcademicaqf.IssnIsbn, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.TituloDelProducto))
+                {
+                    query = query.Where(p => p.TituloDelProducto.Contains(produccionAcademicaqf.TituloDelProducto, StringComparison.OrdinalIgnoreCase));
+                }
+                if (produccionAcademicaqf.PuntosAsignados != null)
+                {
+                    query = query.Where(p => p.PuntosAsignados == produccionAcademicaqf.PuntosAsignados.Value);
+                }
+                if (produccionAcademicaqf.NumeroAutores != null)
+                {
+                    query = query.Where(p => p.NumeroAutores == produccionAcademicaqf.NumeroAutores.Value);
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.EfectosFiscales))
+                {
+                    query = query.Where(p => p.EfectosFiscales.Contains(produccionAcademicaqf.EfectosFiscales, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.ResolucionNumero))
+                {
+                    query = query.Where(p => p.ResolucionNumero.Contains(produccionAcademicaqf.ResolucionNumero, StringComparison.OrdinalIgnoreCase));
+                }
+                if (produccionAcademicaqf.FechaResolucion != null)
+                {
+                    query = query.Where(p => p.FechaResolucion == produccionAcademicaqf.FechaResolucion.Value);
+                }
+                if (!string.IsNullOrEmpty(produccionAcademicaqf.Observaciones))
+                {
+                    query = query.Where(p => p.Observaciones.Contains(produccionAcademicaqf.Observaciones, StringComparison.OrdinalIgnoreCase));
+                }
 
-        public IEnumerable<EgresoDocente> GetEgresos()
-        {
-            return _unitOfWork.DocentePlantumRepositorio.GetEgresos();
+
+            }
+            return query.ToList();
         }
-        public IEnumerable<CategoriaDocente> GetCategorias()
+        public IEnumerable<EgresoDocente> GetEgresos(EgresoDocenteQF egresoDocenteqf)
         {
-            return  _unitOfWork.DocentePlantumRepositorio.GetCategorias();
+            var query = _unitOfWork.DocentePlantumRepositorio.GetEgresos();
+            if (egresoDocenteqf != null)
+            {
+                if (!string.IsNullOrEmpty(egresoDocenteqf.ResolucionNumero))
+                {
+                    query = query.Where(e => e.ResolucionNumero.Contains(egresoDocenteqf.ResolucionNumero, StringComparison.OrdinalIgnoreCase));
+                }
+                if (egresoDocenteqf.FechaResolucion != null)
+                {
+                    query = query.Where(e => e.FechaResolucion == egresoDocenteqf.FechaResolucion.Value);
+                }
+                if (egresoDocenteqf.EgresoAPartirDe != null)
+                {
+                    query = query.Where(e => e.EgresoAPartirDe == egresoDocenteqf.EgresoAPartirDe.Value);
+                }
+            }
+            return query.ToList();
         }
-        public IEnumerable<DocentePlantum> GetDocentesPlantum()
+        public IEnumerable<CategoriaDocente> GetCategorias(CategoriaDocenteQF categoriaDocenteqf)
         {
-            return  _unitOfWork.DocentePlantumRepositorio.GetDocentesPlantum();
+            var query = _unitOfWork.DocentePlantumRepositorio.GetCategorias();
+            if (categoriaDocenteqf != null)
+            {
+              
+                if (categoriaDocenteqf.FechaVinculacion != null)
+                {
+                    query = query.Where(d => d.FechaVinculacion == categoriaDocenteqf.FechaVinculacion.Value);
+                }
+                if (categoriaDocenteqf.FechaAsistente != null)
+                {
+                    query = query.Where(d => d.FechaAsistente == categoriaDocenteqf.FechaAsistente.Value);
+                }
+                if (categoriaDocenteqf.FechaAsociado != null)
+                {
+                    query = query.Where(d => d.FechaAsociado == categoriaDocenteqf.FechaAsociado.Value);
+                }
+                if (categoriaDocenteqf.FechaTitular != null)
+                {
+                    query = query.Where(d => d.FechaTitular == categoriaDocenteqf.FechaTitular.Value);
+                }
+
+            }
+            return query.ToList();
+
+        }
+        public IEnumerable<DocentePlantum> GetDocentesPlantum(DocentePlantumQF docentePlantumqf)
+        {
+            var query = _unitOfWork.DocentePlantumRepositorio.GetDocentesPlantum();
+            if (docentePlantumqf != null)
+            {
+                if (!string.IsNullOrEmpty(docentePlantumqf.Escalafon))
+                {
+                    query = query.Where(d => d.Escalafon.Contains(docentePlantumqf.Escalafon, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docentePlantumqf.NumeroResolucionEscalafon))
+                {
+                    query = query.Where(d => d.NumeroResolucionEscalafon.Contains(docentePlantumqf.NumeroResolucionEscalafon, StringComparison.OrdinalIgnoreCase));
+                }
+                if (docentePlantumqf.FechaResolucionEscalafon != null)
+                {
+                    query = query.Where(d => d.FechaResolucionEscalafon == docentePlantumqf.FechaResolucionEscalafon.Value);
+                }
+                if (!string.IsNullOrEmpty(docentePlantumqf.Dedicacion))
+                {
+                    query = query.Where(d => d.Dedicacion.Contains(docentePlantumqf.Dedicacion, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docentePlantumqf.NivelAcademico))
+                {
+                    query = query.Where(d => d.NivelAcademico.Contains(docentePlantumqf.NivelAcademico, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docentePlantumqf.NumeroTarjetaProfesional))
+                {
+                    query = query.Where(d => d.NumeroTarjetaProfesional.Contains(docentePlantumqf.NumeroTarjetaProfesional, StringComparison.OrdinalIgnoreCase));
+                }
+
+            }
+
+            return query.ToList();
         }
 
         public async Task<bool> ActualizarCategoria(CategoriaDocente categoria)

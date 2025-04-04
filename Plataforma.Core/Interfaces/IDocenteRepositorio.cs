@@ -28,6 +28,11 @@ namespace Plataforma.Core.Interfaces
         Task InsertarDocenteDetalle(DocenteDetalle docenteDetalle);
         void ActualizarDocenteDetalle(DocenteDetalle docenteDetalle);
         Task EliminarDocenteDetalle(long DocenteId);
-        
+
+        IEnumerable<DocenteDatosPersonale> GetDatosPersonales();
+        Task<DocenteDatosPersonale> GetDatoPersonal(long DocenteId);
+        Task InsertarDatoPersonal(DocenteDatosPersonale datoPersonal);
+        void ActualizarDatoPersonal(DocenteDatosPersonale datoPersonal);
+        Task EliminarDatoPersonal(long DocenteId);
     }
 }

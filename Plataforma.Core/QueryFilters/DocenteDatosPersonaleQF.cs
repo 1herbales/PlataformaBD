@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Plataforma.Core.DTOs
+namespace Plataforma.Core.QueryFilters
 {
-    public class DocenteDatosPersonalesDTO
+    public class DocenteDatosPersonaleQF
     {
-        public long Id { get; set; }
-        public long DocenteId { get; set; }
         public DateOnly FechaNacimiento { get; set; }
 
         public string Sexo { get; set; } = null!;
@@ -26,6 +24,5 @@ namespace Plataforma.Core.DTOs
 
         public string NumeroContacto { get; set; } = null!;
 
-     
     }
 }

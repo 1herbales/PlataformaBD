@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 
 
@@ -21,9 +23,12 @@ namespace BD.Controllers
         private readonly IMapper _mapper1 = mapper1;
 
         [HttpGet]
-        public IActionResult GetDocenteCatedras()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
+        public IActionResult GetDocenteCatedras([FromQuery] DocenteCatedraQF docenteCatedraQF)
         {
-            var DocenteCatedras = _docenteServicio.GetDocenteCatedras();
+            var DocenteCatedras = _docenteServicio.GetDocenteCatedras(docenteCatedraQF);
             var docenteCatedrasDTO = _mapper1.Map<IEnumerable<DocenteCatedraDTO>>(DocenteCatedras);
             var response = new ApiResponse<IEnumerable<DocenteCatedraDTO>>(docenteCatedrasDTO);
             return Ok(response);

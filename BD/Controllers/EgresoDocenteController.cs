@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 
 namespace BD.Controllers
 {
@@ -16,9 +18,11 @@ namespace BD.Controllers
 
 
         [HttpGet]
-        public IActionResult GetEgresos()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult GetEgresos([FromQuery] EgresoDocenteQF egresoDocenteqf)
         {
-            var Egresos =  _docentePlantumServicio.GetEgresos();
+            var Egresos =  _docentePlantumServicio.GetEgresos(egresoDocenteqf);
             var egresosDTOS = _mapper.Map<IEnumerable<EgresoDocenteDTO>>(Egresos);
             var response = new ApiResponse<IEnumerable<EgresoDocenteDTO>>(egresosDTOS);
             return Ok(response);

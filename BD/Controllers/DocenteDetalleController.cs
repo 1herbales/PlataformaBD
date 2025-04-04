@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 
 namespace BD.Controllers
 {
@@ -16,9 +18,12 @@ namespace BD.Controllers
         private readonly IMapper _mapper3 = mapper3;
 
         [HttpGet]
-        public IActionResult GetDocenteDetalles()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
+        public IActionResult GetDocenteDetalles([FromQuery] DocenteDetalleQF docenteDetalleqf)
         {
-            var DocentesDetalles = _docenteServicio.GetDocenteDetalles();
+            var DocentesDetalles = _docenteServicio.GetDocenteDetalles(docenteDetalleqf);
             var docentesDetallesDTOS = _mapper3.Map<IEnumerable<DocenteDetalleDTO>>(DocentesDetalles);
             var response = new ApiResponse<IEnumerable<DocenteDetalleDTO>>(docentesDetallesDTOS);
             return Ok(response);

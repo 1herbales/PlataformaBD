@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 
 
 namespace Plataforma.Core.Servicios
@@ -79,9 +80,26 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteTitulosRepositorio.GetPregrado(DocenteId);
         }
 
-        public IEnumerable<Pregrado> GetPregrados()
+        public IEnumerable<Pregrado> GetPregrados(PregradoQF pregradoqf)
         {
-            return _unitOfWork.DocenteTitulosRepositorio.GetPregrados();
+            var query = _unitOfWork.DocenteTitulosRepositorio.GetPregrados();
+            // Apply any filtering or sorting logic here if needed
+            if (pregradoqf != null)
+            {
+                if (!string.IsNullOrEmpty(pregradoqf.Titulo))
+                {
+                    query = query.Where(d => d.Titulo.Contains(pregradoqf.Titulo, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(pregradoqf.Universidad))
+                {
+                    query = query.Where(d => d.Universidad.Contains(pregradoqf.Universidad, StringComparison.OrdinalIgnoreCase));
+                }
+                if (pregradoqf.FechaFinalizacion != null)
+                {
+                    query = query.Where(d => d.FechaFinalizacion == pregradoqf.FechaFinalizacion);
+                }
+            }
+            return query.ToList();
         }
 
         public async Task<Especializacion> GetEspecializacion(long DocenteId)
@@ -89,9 +107,26 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteTitulosRepositorio.GetEspecializacion(DocenteId);
         }
 
-        public IEnumerable<Especializacion> GetEspecializaciones()
+        public IEnumerable<Especializacion> GetEspecializaciones(EspecializacionQF especializacionqf)
         {
-            return  _unitOfWork.DocenteTitulosRepositorio.GetEspecializaciones();
+            var query = _unitOfWork.DocenteTitulosRepositorio.GetEspecializaciones();
+            // Apply any filtering or sorting logic here if needed
+            if (especializacionqf != null)
+            {
+                if (!string.IsNullOrEmpty(especializacionqf.Titulo))
+                {
+                    query = query.Where(d => d.Titulo.Contains(especializacionqf.Titulo, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(especializacionqf.Universidad))
+                {
+                    query = query.Where(d => d.Universidad.Contains(especializacionqf.Universidad, StringComparison.OrdinalIgnoreCase));
+                }
+                if (especializacionqf.FechaFinalizacion != null)
+                {
+                    query = query.Where(d => d.FechaFinalizacion == especializacionqf.FechaFinalizacion);
+                }
+            }
+            return query.ToList();
         }
 
         public async Task<Magister> GetMagister(long DocenteId)
@@ -99,9 +134,43 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteTitulosRepositorio.GetMagister(DocenteId);
         }
 
-        public IEnumerable<Magister> GetMagisters()
+        public IEnumerable<Magister> GetMagisters(MagisterQF magisterqf)
         {
-            return  _unitOfWork.DocenteTitulosRepositorio.GetMagisters();
+            var query = _unitOfWork.DocenteTitulosRepositorio.GetMagisters();
+            // Apply any filtering or sorting logic here if needed
+            if (magisterqf != null)
+            {
+                if (!string.IsNullOrEmpty(magisterqf.Titulo))
+                {
+                    query = query.Where(d => d.Titulo.Contains(magisterqf.Titulo, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(magisterqf.Universidad))
+                {
+                    query = query.Where(d => d.Universidad.Contains(magisterqf.Universidad, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(magisterqf.Pais))
+                {
+                    query = query.Where(d => d.Pais.Contains(magisterqf.Pais, StringComparison.OrdinalIgnoreCase));
+                }
+                if (magisterqf.FechaFinalizacion != null)
+                {
+                    query = query.Where(d => d.FechaFinalizacion == magisterqf.FechaFinalizacion);
+                }
+                if (!string.IsNullOrEmpty(magisterqf.Convalidacion))
+                {
+                    query = query.Where(d => d.Convalidacion.Contains(magisterqf.Convalidacion, StringComparison.OrdinalIgnoreCase));
+                }
+                if (magisterqf.FechaConvalidacion != null)
+                {
+                    query = query.Where(d => d.FechaConvalidacion == magisterqf.FechaConvalidacion);
+                }
+                if (!string.IsNullOrEmpty(magisterqf.ResolucionConvalidacion))
+                {
+                    query = query.Where(d => d.ResolucionConvalidacion.Contains(magisterqf.ResolucionConvalidacion, StringComparison.OrdinalIgnoreCase));
+                }
+
+            }
+            return query.ToList();
         }
 
         public async Task<Doctorado> GetDoctorado(long DocenteId)
@@ -110,13 +179,46 @@ namespace Plataforma.Core.Servicios
 
         }
 
-        public IEnumerable<Doctorado> GetDoctorados()
+        public IEnumerable<Doctorado> GetDoctorados(DoctoradoQF doctoradoqf)
         {
-            return _unitOfWork.DocenteTitulosRepositorio.GetDoctorados();
+            var query = _unitOfWork.DocenteTitulosRepositorio.GetDoctorados();
+            // Apply any filtering or sorting logic here if needed
+            if (doctoradoqf != null)
+            {
+                if (!string.IsNullOrEmpty(doctoradoqf.Titulo))
+                {
+                    query = query.Where(d => d.Titulo.Contains(doctoradoqf.Titulo, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(doctoradoqf.Universidad))
+                {
+                    query = query.Where(d => d.Universidad.Contains(doctoradoqf.Universidad, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (doctoradoqf.FechaFinalizacion != null)
+                {
+                    query = query.Where(d => d.FechaFinalizacion == doctoradoqf.FechaFinalizacion);
+                }
+
+                if (!string.IsNullOrEmpty(doctoradoqf.Convalidacion))
+                {
+                    query = query.Where(d => d.Convalidacion.Contains(doctoradoqf.Convalidacion, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (doctoradoqf.FechaConvalidacion != null) 
+                {
+                    query = query.Where(d => d.FechaConvalidacion == doctoradoqf.FechaConvalidacion);
+                }
+
+                if (!string.IsNullOrEmpty(doctoradoqf.ResolucionConvalidacion))
+                {
+                    query = query.Where(d => d.ResolucionConvalidacion.Contains(doctoradoqf.ResolucionConvalidacion, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+            return query.ToList();
         }
 
-       
-
+  
         // INSERTAR
 
         public async Task InsertarDoctorado(Doctorado doctorado)

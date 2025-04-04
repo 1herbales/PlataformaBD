@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 using Plataforma.Core.Servicios;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 
 namespace BD.Controllers
@@ -21,9 +23,13 @@ namespace BD.Controllers
 
 
         [HttpGet]
-        public IActionResult GetDocentesPlantum()
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
+
+        public IActionResult GetDocentesPlantum([FromQuery] DocentePlantumQF docentePlantumqf)
         {
-            var DocentesPlantum = _docentePlantumServicio.GetDocentesPlantum();
+            var DocentesPlantum = _docentePlantumServicio.GetDocentesPlantum(docentePlantumqf);
             var docentesPlantumDTOS = _mapper.Map<IEnumerable<DocentePlantumDTO>>(DocentesPlantum);
             var response = new ApiResponse<IEnumerable<DocentePlantumDTO>>(docentesPlantumDTOS);
             return Ok(response);

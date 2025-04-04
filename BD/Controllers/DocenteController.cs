@@ -7,6 +7,7 @@ using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 
 namespace BD.Controllers
@@ -20,6 +21,9 @@ namespace BD.Controllers
 
 
         [HttpGet]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        
         public IActionResult GetDocentes([FromQuery] DocenteQF docenteqf)
         {
             var Docentes = _docenteServicio.GetDocentes(docenteqf);
@@ -29,6 +33,7 @@ namespace BD.Controllers
         }
 
         [HttpGet("{DocenteId}")]
+        
         public async Task<IActionResult> GetDocente(long DocenteId)
         {
             var Docente = await _docenteServicio.GetDocente(DocenteId);

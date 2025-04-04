@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
+using Plataforma.Core.QueryFilters;
 using Plataforma.Core.Servicios;
 
 namespace BD.Controllers
@@ -17,9 +19,13 @@ namespace BD.Controllers
         private readonly IMapper _mapper4 = mapper4;
 
         [HttpGet]
-        public IActionResult GetEspecializaciones()
+
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
+        public IActionResult GetEspecializaciones([FromQuery] EspecializacionQF especializacionqf)
         {
-            var Especializaciones = _docenteTitulosServicio.GetEspecializaciones();
+            var Especializaciones = _docenteTitulosServicio.GetEspecializaciones(especializacionqf);
             var especializacionesDTOS = _mapper4.Map<IEnumerable<EspecializacionDTO>>(Especializaciones);
             var response = new ApiResponse<IEnumerable<EspecializacionDTO>>(especializacionesDTOS);
             return Ok(response);

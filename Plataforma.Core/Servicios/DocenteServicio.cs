@@ -18,6 +18,13 @@ namespace Plataforma.Core.Servicios
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
+        public async Task<bool> ActualizarDatoPersonal(DocenteDatosPersonale datoPersonal)
+        {
+            _unitOfWork.DocenteRepositorio.ActualizarDatoPersonal(datoPersonal);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ActualizarDocente(Docente docente)
         {
             _unitOfWork.DocenteRepositorio.ActualizarDocente(docente);
@@ -39,7 +46,11 @@ namespace Plataforma.Core.Servicios
             return true;
         }
 
-
+        public async Task<bool> EliminarDatoPersonal(long DocenteId)
+        {
+            await _unitOfWork.DocenteRepositorio.EliminarDatoPersonal(DocenteId);
+            return true;
+        }
 
         public async Task<bool> EliminarDocente(long DocenteId)
         {
@@ -59,7 +70,48 @@ namespace Plataforma.Core.Servicios
             return true;
         }
 
+        public async Task<DocenteDatosPersonale> GetDatoPersonal(long DocenteId)
+        {
+            return await _unitOfWork.DocenteRepositorio.GetDatoPersonal(DocenteId);
+        }
 
+        public object GetDatosPersonales(DocenteDatosPersonaleQF docenteDatosPersonaleqf)
+        {
+            var query = _unitOfWork.DocenteRepositorio.GetDatosPersonales();
+            if (docenteDatosPersonaleqf != null)
+            {
+                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.Sexo))
+                {
+                    query = query.Where(d => d.Sexo.Contains(docenteDatosPersonaleqf.Sexo, StringComparison.OrdinalIgnoreCase));
+
+                }
+                if (docenteDatosPersonaleqf.Edad > 0)
+                {
+                    query = query.Where(d => d.Edad == docenteDatosPersonaleqf.Edad);
+                }
+                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.LugarNacimientoMunicipio))
+                {
+                    query = query.Where(d => d.LugarNacimientoMunicipio.Contains(docenteDatosPersonaleqf.LugarNacimientoMunicipio, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.Departamento))
+                {
+                    query = query.Where(d => d.Departamento.Contains(docenteDatosPersonaleqf.Departamento, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.PaisProcedencia))
+                {
+                    query = query.Where(d => d.PaisProcedencia.Contains(docenteDatosPersonaleqf.PaisProcedencia, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.DireccionResidencia))
+                {
+                    query = query.Where(d => d.DireccionResidencia.Contains(docenteDatosPersonaleqf.DireccionResidencia, StringComparison.OrdinalIgnoreCase));
+                }
+                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.NumeroContacto))
+                {
+                    query = query.Where(d => d.NumeroContacto.Contains(docenteDatosPersonaleqf.NumeroContacto, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+            return query.ToList();
+        }
 
         public async Task<Docente> GetDocente(long DocenteId)
         {
@@ -71,9 +123,42 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteRepositorio.GetDocenteCatedra(DocenteId);
         }
 
-        public IEnumerable<DocenteCatedra> GetDocenteCatedras()
+        public IEnumerable<DocenteCatedra> GetDocenteCatedras(DocenteCatedraQF docenteCatedraqf)
         {
-            return _unitOfWork.DocenteRepositorio.GetDocenteCatedras();
+            var query = _unitOfWork.DocenteRepositorio.GetDocenteCatedras();
+            if (docenteCatedraqf != null)
+            {
+                if (docenteCatedraqf.HorasContratadas.HasValue)
+                {
+                    query = query.Where(d => d.HorasContratadas == docenteCatedraqf.HorasContratadas.Value);
+                }
+
+                if (docenteCatedraqf.FechaInicioContrato.HasValue)
+                {
+                    query = query.Where(d => d.FechaInicioContrato == docenteCatedraqf.FechaInicioContrato.Value);
+                }
+
+                if (!string.IsNullOrEmpty(docenteCatedraqf.ResolucionVinculacion))
+                {
+                    query = query.Where(d => d.ResolucionVinculacion.Contains(docenteCatedraqf.ResolucionVinculacion, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (docenteCatedraqf.FechaResolucion.HasValue)
+                {
+                    query = query.Where(d => d.FechaResolucion == docenteCatedraqf.FechaResolucion.Value);
+                }
+
+                if (docenteCatedraqf.DocenteActivo.HasValue)
+                {
+                    query = query.Where(d => d.DocenteActivo == docenteCatedraqf.DocenteActivo.Value);
+                }
+
+                if (!string.IsNullOrEmpty(docenteCatedraqf.NumeroTarjetaProfesional))
+                {
+                    query = query.Where(d => d.NumeroTarjetaProfesional.Contains(docenteCatedraqf.NumeroTarjetaProfesional, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+            return query.ToList();
         }
 
         public async Task<DocenteDetalle> GetDocenteDetalle(long DocenteId)
@@ -81,9 +166,34 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteRepositorio.GetDocenteDetalle(DocenteId);
         }
 
-        public IEnumerable<DocenteDetalle> GetDocenteDetalles()
+        public IEnumerable<DocenteDetalle> GetDocenteDetalles(DocenteDetalleQF docenteDetalleqf)
         {
-            return _unitOfWork.DocenteRepositorio.GetDocenteDetalles();
+            var query = _unitOfWork.DocenteRepositorio.GetDocenteDetalles();
+            // Apply any filtering or sorting logic here if needed
+            if (docenteDetalleqf != null)
+            {
+                if (!string.IsNullOrEmpty(docenteDetalleqf.Modalidad))
+                {
+                    query = query.Where(d => d.Modalidad.Contains(docenteDetalleqf.Modalidad, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(docenteDetalleqf.Municipio))
+                {
+                    query = query.Where(d => d.Municipio.Contains(docenteDetalleqf.Municipio, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(docenteDetalleqf.Facultad))
+                {
+                    query = query.Where(d => d.Facultad.Contains(docenteDetalleqf.Facultad, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrEmpty(docenteDetalleqf.ProgramaAdscrito))
+                {
+                    query = query.Where(d => d.ProgramaAdscrito.Contains(docenteDetalleqf.ProgramaAdscrito, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+            return query.ToList();
+
         }
 
         public IEnumerable<Docente> GetDocentes(DocenteQF docenteqf)
@@ -117,7 +227,12 @@ namespace Plataforma.Core.Servicios
                     query = query.Where(d => d.EmailInstitucional.Contains(docenteqf.EmailInstitucional, StringComparison.OrdinalIgnoreCase));
                 }
             }
-            return query;
+            return query.ToList();
+        }
+
+        public Task InsertarDatoPersonal(DocenteDatosPersonale datoPersonal)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task InsertarDocente(Docente docente)
@@ -136,6 +251,21 @@ namespace Plataforma.Core.Servicios
         {
             await _unitOfWork.DocenteRepositorio.InsertarDocenteDetalle(docenteDetalle);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        Task<bool> IDocenteServicio.ActualizarDatoPersonal(DocenteDatosPersonale datoPersonal)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DocenteDatosPersonale> IDocenteServicio.GetDatoPersonal(long DocenteId)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerable<DocenteDatosPersonale> IDocenteServicio.GetDatosPersonales(DocenteDatosPersonaleQF docenteDatosPersonaleqf)
+        {
+            throw new NotImplementedException();
         }
     }
 }

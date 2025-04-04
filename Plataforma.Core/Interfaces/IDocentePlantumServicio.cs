@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Plataforma.Core.Entidades;
+using Plataforma.Core.QueryFilters;
 
 
 
@@ -14,10 +15,10 @@ namespace Plataforma.Core.Interfaces
     {
       
 
-        IEnumerable<DocentePlantum> GetDocentesPlantum();
-        IEnumerable<ProduccionAcademica> GetProducciones();
-        IEnumerable<EgresoDocente> GetEgresos();
-        IEnumerable<CategoriaDocente> GetCategorias();
+        IEnumerable<DocentePlantum> GetDocentesPlantum(DocentePlantumQF docentePlantumqf);
+        IEnumerable<ProduccionAcademica> GetProducciones(ProduccionAcademicaQF produccionAcademicaqf);
+        IEnumerable<EgresoDocente> GetEgresos(EgresoDocenteQF egresoDocenteqf);
+        IEnumerable<CategoriaDocente> GetCategorias(CategoriaDocenteQF categoriaDocenteqf);
 
         Task<DocentePlantum> GetDocentePlantum(long docenteId);
         Task<ProduccionAcademica> GetProduccion(long docenteId);
