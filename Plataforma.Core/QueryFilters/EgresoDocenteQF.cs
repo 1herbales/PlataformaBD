@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plataforma.Core.QueryFilters
 {
-    public class EgresoDocenteQF
+    public class EgresoDocenteQF : QueryFiltersBase
     {
         public string? ResolucionNumero { get; set; }
 
@@ -14,7 +14,6 @@ namespace Plataforma.Core.QueryFilters
 
         public DateOnly? EgresoAPartirDe { get; set; }
 
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+       
     }
 }

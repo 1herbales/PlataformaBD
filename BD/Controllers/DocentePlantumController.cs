@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
 using Plataforma.Core.Servicios;
+using Plataforma.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -15,19 +17,39 @@ namespace BD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocentePlantumController(IDocentePlantumServicio docentePlantumServicio, IMapper mapper) : Controller
+    public class DocentePlantumController(IDocentePlantumServicio docentePlantumServicio, IMapper mapper, IUriService uriService) : Controller
     {
         private readonly IDocentePlantumServicio _docentePlantumServicio = docentePlantumServicio;
         private readonly IMapper _mapper = mapper;
+        private readonly IUriService _uriService = uriService;
 
 
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetDocentesPlantum))]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult GetDocentesPlantum([FromQuery] DocentePlantumQF docentePlantumqf)
         {
             var DocentesPlantum = _docentePlantumServicio.GetDocentesPlantum(docentePlantumqf);
             var docentesPlantumDTOS = _mapper.Map<IEnumerable<DocentePlantumDTO>>(DocentesPlantum);
-            var response = new ApiResponse<IEnumerable<DocentePlantumDTO>>(docentesPlantumDTOS);
+            var metadata = new Metadata
+            {
+                TotalCount = DocentesPlantum.TotalCount,
+                PageSize = DocentesPlantum.PageSize,
+                PageNumber = DocentesPlantum.PageNumber,
+                TotalPages = DocentesPlantum.TotalPages,
+                HasNext = DocentesPlantum.HasNext,
+                HasPrevious = DocentesPlantum.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(docentePlantumqf, Url.RouteUrl(nameof(GetDocentePlantum))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(docentePlantumqf, Url.RouteUrl(nameof(GetDocentePlantum))).ToString(),
+
+            };
+
+            var response = new ApiResponse<IEnumerable<DocentePlantumDTO>>(docentesPlantumDTOS)
+            {
+                Meta = metadata
+            };
+            Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
         }
 

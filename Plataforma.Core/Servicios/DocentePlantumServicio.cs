@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
@@ -13,18 +15,23 @@ namespace Plataforma.Core.Servicios
     public class DocentePlantumServicio : IDocentePlantumServicio
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly PaginationOptions _paginationOptions;
 
-        public DocentePlantumServicio(IUnitOfWork unitOfWork)
+
+        public DocentePlantumServicio(IUnitOfWork unitOfWork, IOptions<PaginationOptions> options)
         {
             _unitOfWork = unitOfWork;
+            _paginationOptions = options.Value;
         }
 
-        public IEnumerable<ProduccionAcademica> GetProducciones(ProduccionAcademicaQF produccionAcademicaqf)
+        public PagedList<ProduccionAcademica> GetProducciones(ProduccionAcademicaQF produccionAcademicaqf)
         {
             var query = _unitOfWork.DocentePlantumRepositorio.GetProducciones();
-            if (produccionAcademicaqf != null)
-            {
-                if (!string.IsNullOrEmpty(produccionAcademicaqf.ActaNumero))
+            produccionAcademicaqf.PageNumber = produccionAcademicaqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : produccionAcademicaqf.PageNumber;
+            produccionAcademicaqf.PageSize = produccionAcademicaqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : produccionAcademicaqf.PageSize;
+
+
+            if (!string.IsNullOrEmpty(produccionAcademicaqf.ActaNumero))
                 {
                     query = query.Where(p => p.ActaNumero.Contains(produccionAcademicaqf.ActaNumero, StringComparison.OrdinalIgnoreCase));
                 }
@@ -76,17 +83,16 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(p => p.Observaciones.Contains(produccionAcademicaqf.Observaciones, StringComparison.OrdinalIgnoreCase));
                 }
-
-
-            }
-            return query.ToList();
+            var pagedProduccion = PagedList<ProduccionAcademica>.Create(query, produccionAcademicaqf.PageNumber, produccionAcademicaqf.PageSize);
+            return pagedProduccion;
         }
-        public IEnumerable<EgresoDocente> GetEgresos(EgresoDocenteQF egresoDocenteqf)
+        public PagedList<EgresoDocente> GetEgresos(EgresoDocenteQF egresoDocenteqf)
         {
             var query = _unitOfWork.DocentePlantumRepositorio.GetEgresos();
-            if (egresoDocenteqf != null)
-            {
-                if (!string.IsNullOrEmpty(egresoDocenteqf.ResolucionNumero))
+            egresoDocenteqf.PageNumber = egresoDocenteqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : egresoDocenteqf.PageNumber;
+            egresoDocenteqf.PageSize = egresoDocenteqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : egresoDocenteqf.PageSize;
+
+            if (!string.IsNullOrEmpty(egresoDocenteqf.ResolucionNumero))
                 {
                     query = query.Where(e => e.ResolucionNumero.Contains(egresoDocenteqf.ResolucionNumero, StringComparison.OrdinalIgnoreCase));
                 }
@@ -98,16 +104,17 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(e => e.EgresoAPartirDe == egresoDocenteqf.EgresoAPartirDe.Value);
                 }
+                var pagedEgreso = PagedList<EgresoDocente>.Create(query, egresoDocenteqf.PageNumber, egresoDocenteqf.PageSize);
+                return pagedEgreso;
             }
-            return query.ToList();
-        }
-        public IEnumerable<CategoriaDocente> GetCategorias(CategoriaDocenteQF categoriaDocenteqf)
+        public PagedList<CategoriaDocente> GetCategorias(CategoriaDocenteQF categoriaDocenteqf)
         {
             var query = _unitOfWork.DocentePlantumRepositorio.GetCategorias();
-            if (categoriaDocenteqf != null)
-            {
-              
-                if (categoriaDocenteqf.FechaVinculacion != null)
+            categoriaDocenteqf.PageNumber = categoriaDocenteqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : categoriaDocenteqf.PageNumber;
+            categoriaDocenteqf.PageSize = categoriaDocenteqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : categoriaDocenteqf.PageSize;
+
+
+            if (categoriaDocenteqf.FechaVinculacion != null)
                 {
                     query = query.Where(d => d.FechaVinculacion == categoriaDocenteqf.FechaVinculacion.Value);
                 }
@@ -124,16 +131,17 @@ namespace Plataforma.Core.Servicios
                     query = query.Where(d => d.FechaTitular == categoriaDocenteqf.FechaTitular.Value);
                 }
 
-            }
-            return query.ToList();
+            var pagedCategoria = PagedList<CategoriaDocente>.Create(query, categoriaDocenteqf.PageNumber, categoriaDocenteqf.PageSize);
+            return pagedCategoria;
 
         }
-        public IEnumerable<DocentePlantum> GetDocentesPlantum(DocentePlantumQF docentePlantumqf)
+        public PagedList<DocentePlantum> GetDocentesPlantum(DocentePlantumQF docentePlantumqf)
         {
             var query = _unitOfWork.DocentePlantumRepositorio.GetDocentesPlantum();
-            if (docentePlantumqf != null)
-            {
-                if (!string.IsNullOrEmpty(docentePlantumqf.Escalafon))
+            docentePlantumqf.PageNumber = docentePlantumqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : docentePlantumqf.PageNumber;
+            docentePlantumqf.PageSize = docentePlantumqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : docentePlantumqf.PageSize;
+
+            if (!string.IsNullOrEmpty(docentePlantumqf.Escalafon))
                 {
                     query = query.Where(d => d.Escalafon.Contains(docentePlantumqf.Escalafon, StringComparison.OrdinalIgnoreCase));
                 }
@@ -158,10 +166,9 @@ namespace Plataforma.Core.Servicios
                     query = query.Where(d => d.NumeroTarjetaProfesional.Contains(docentePlantumqf.NumeroTarjetaProfesional, StringComparison.OrdinalIgnoreCase));
                 }
 
+                var pagedDocentePlantum = PagedList<DocentePlantum>.Create(query, docentePlantumqf.PageNumber, docentePlantumqf.PageSize);
+                return pagedDocentePlantum;
             }
-
-            return query.ToList();
-        }
 
         public async Task<bool> ActualizarCategoria(CategoriaDocente categoria)
         {

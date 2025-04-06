@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic.FileIO;
 using Plataforma.Core.CustomEntities;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
 
 
-
-
-
-
 namespace Plataforma.Core.Servicios
 {
-    public class DocenteServicio(IUnitOfWork unitOfWork) : IDocenteServicio
+    public class DocenteServicio(IUnitOfWork unitOfWork, IOptions<PaginationOptions> options) : IDocenteServicio
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly PaginationOptions _paginationOptions = options.Value;
 
         public async Task<bool> ActualizarDatoPersonal(DocenteDatosPersonale datoPersonal)
         {
@@ -80,7 +79,9 @@ namespace Plataforma.Core.Servicios
         {
             var query = _unitOfWork.DocenteRepositorio.GetDatosPersonales();
             
-                if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.Sexo))
+            docenteDatosPersonaleqf.PageNumber = docenteDatosPersonaleqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : docenteDatosPersonaleqf.PageNumber;
+            docenteDatosPersonaleqf.PageSize = docenteDatosPersonaleqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : docenteDatosPersonaleqf.PageSize;
+            if (!string.IsNullOrEmpty(docenteDatosPersonaleqf.Sexo))
                 {
                     query = query.Where(d => d.Sexo.Contains(docenteDatosPersonaleqf.Sexo, StringComparison.OrdinalIgnoreCase));
                 }
@@ -127,8 +128,10 @@ namespace Plataforma.Core.Servicios
         public PagedList<DocenteCatedra> GetDocenteCatedras(DocenteCatedraQF docenteCatedraqf)
         {
             var query = _unitOfWork.DocenteRepositorio.GetDocenteCatedras();
-            
-                if (docenteCatedraqf.HorasContratadas.HasValue)
+            docenteCatedraqf.PageNumber = docenteCatedraqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : docenteCatedraqf.PageNumber;
+            docenteCatedraqf.PageSize = docenteCatedraqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : docenteCatedraqf.PageSize;
+
+            if (docenteCatedraqf.HorasContratadas.HasValue)
                 {
                     query = query.Where(d => d.HorasContratadas == docenteCatedraqf.HorasContratadas.Value);
                 }
@@ -170,8 +173,10 @@ namespace Plataforma.Core.Servicios
         public PagedList<DocenteDetalle> GetDocenteDetalles(DocenteDetalleQF docenteDetalleqf)
         {
             var query = _unitOfWork.DocenteRepositorio.GetDocenteDetalles();
-            
-                if (!string.IsNullOrEmpty(docenteDetalleqf.Modalidad))
+            docenteDetalleqf.PageNumber = docenteDetalleqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : docenteDetalleqf.PageNumber;
+            docenteDetalleqf.PageSize = docenteDetalleqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : docenteDetalleqf.PageSize;
+
+            if (!string.IsNullOrEmpty(docenteDetalleqf.Modalidad))
                 {
                     query = query.Where(d => d.Modalidad.Contains(docenteDetalleqf.Modalidad, StringComparison.OrdinalIgnoreCase));
                 }
@@ -199,8 +204,10 @@ namespace Plataforma.Core.Servicios
         {
             var query = _unitOfWork.DocenteRepositorio.GetDocentes();
             // Apply any filtering or sorting logic here if needed
-            
-                if (!string.IsNullOrEmpty(docenteqf.Nombre))
+            docenteqf.PageNumber = docenteqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : docenteqf.PageNumber;
+            docenteqf.PageSize = docenteqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : docenteqf.PageSize;
+
+            if (!string.IsNullOrEmpty(docenteqf.Nombre))
                 {
                     query = query.Where(d => d.Nombre.Contains(docenteqf.Nombre, StringComparison.OrdinalIgnoreCase));
                 }

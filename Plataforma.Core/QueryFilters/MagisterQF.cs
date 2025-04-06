@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plataforma.Core.QueryFilters
 {
-    public class MagisterQF
+    public class MagisterQF : QueryFiltersBase
     {
         public string? Titulo { get; set; }
 
@@ -22,7 +22,6 @@ namespace Plataforma.Core.QueryFilters
 
         public DateOnly? FechaConvalidacion { get; set; }
 
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+     
     }
 }

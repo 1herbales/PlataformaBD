@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plataforma.Core.QueryFilters
 {
-    public class EspecializacionQF
+    public class EspecializacionQF : QueryFiltersBase
     { 
         public string? Titulo { get; set; }
 
@@ -14,7 +14,6 @@ namespace Plataforma.Core.QueryFilters
 
         public DateOnly? FechaFinalizacion { get; set; }
 
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+     
     }
 }

@@ -3,21 +3,25 @@ using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
+using Plataforma.Infrastructure.Interfaces;
 
 namespace BD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocenteDetalleController(IDocenteServicio docenteServicio, IMapper mapper3) : Controller
+    public class DocenteDetalleController(IDocenteServicio docenteServicio, IMapper mapper3, IUriService uriService) : Controller
     {
         private readonly IDocenteServicio _docenteServicio = docenteServicio;
         private readonly IMapper _mapper3 = mapper3;
+        private readonly IUriService _uriService = uriService;
 
-        [HttpGet]
+
+        [HttpGet(Name = nameof(GetDocenteDetalles))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
 
@@ -25,20 +29,26 @@ namespace BD.Controllers
         {
             var DocentesDetalles = _docenteServicio.GetDocenteDetalles(docenteDetalleqf);
             var docentesDetallesDTOS = _mapper3.Map<IEnumerable<DocenteDetalleDTO>>(DocentesDetalles);
-            var response = new ApiResponse<IEnumerable<DocenteDetalleDTO>>(docentesDetallesDTOS);
-            var metadata = new
+            var metadata = new Metadata
             {
-                DocentesDetalles.TotalCount,
-                DocentesDetalles.PageSize,
-                DocentesDetalles.PageNumber,
-                DocentesDetalles.TotalPages,
-                DocentesDetalles.HasNext,
-                DocentesDetalles.HasPrevious
+                TotalCount = DocentesDetalles.TotalCount,
+                PageSize = DocentesDetalles.PageSize,
+                PageNumber = DocentesDetalles.PageNumber,
+                TotalPages = DocentesDetalles.TotalPages,
+                HasNext = DocentesDetalles.HasNext,
+                HasPrevious = DocentesDetalles.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(docenteDetalleqf, Url.RouteUrl(nameof(GetDocenteDetalles))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(docenteDetalleqf, Url.RouteUrl(nameof(GetDocenteDetalles))).ToString(),
 
+            };
+
+            var response = new ApiResponse<IEnumerable<DocenteDetalleDTO>>(docentesDetallesDTOS)
+            {
+                Meta = metadata
             };
             Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
-            
+
         }
 
         [HttpGet("{DocenteId}")]

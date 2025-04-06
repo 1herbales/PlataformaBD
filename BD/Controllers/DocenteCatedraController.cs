@@ -2,10 +2,13 @@
 using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
+using Plataforma.Infrastructure.Interfaces;
+using Plataforma.Infrastructure.Servicios;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -17,29 +20,37 @@ namespace BD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocenteCatedraController(IDocenteServicio docenteServicio, IMapper mapper1) : Controller
+    public class DocenteCatedraController(IDocenteServicio docenteServicio, IMapper mapper1, IUriService uriService) : Controller
     {
         private readonly IDocenteServicio _docenteServicio = docenteServicio;
         private readonly IMapper _mapper1 = mapper1;
+        private readonly IUriService _uriService = uriService;
 
-        [HttpGet]
+
+        [HttpGet(Name = nameof(GetDocenteCatedras))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
 
-        public IActionResult GetDocenteCatedras([FromQuery] DocenteCatedraQF docenteCatedraQF)
+        public IActionResult GetDocenteCatedras([FromQuery] DocenteCatedraQF docenteCatedraqf)
         {
-            var DocenteCatedras = _docenteServicio.GetDocenteCatedras(docenteCatedraQF);
+            var DocenteCatedras = _docenteServicio.GetDocenteCatedras(docenteCatedraqf);
             var docenteCatedrasDTO = _mapper1.Map<IEnumerable<DocenteCatedraDTO>>(DocenteCatedras);
-            var response = new ApiResponse<IEnumerable<DocenteCatedraDTO>>(docenteCatedrasDTO);
-            var metadata = new
+            var metadata = new Metadata
             {
-                DocenteCatedras.TotalCount,
-                DocenteCatedras.PageSize,
-                DocenteCatedras.PageNumber,
-                DocenteCatedras.TotalPages,
-                DocenteCatedras.HasNext,
-                DocenteCatedras.HasPrevious
+                TotalCount = DocenteCatedras.TotalCount,
+                PageSize = DocenteCatedras.PageSize,
+                PageNumber = DocenteCatedras.PageNumber,
+                TotalPages = DocenteCatedras.TotalPages,
+                HasNext = DocenteCatedras.HasNext,
+                HasPrevious = DocenteCatedras.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(docenteCatedraqf, Url.RouteUrl(nameof(GetDocenteCatedras))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(docenteCatedraqf, Url.RouteUrl(nameof(GetDocenteCatedras))).ToString(),
 
+            };
+
+            var response = new ApiResponse<IEnumerable<DocenteCatedraDTO>>(docenteCatedrasDTO)
+            {
+                Meta = metadata
             };
             Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);

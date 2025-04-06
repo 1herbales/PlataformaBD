@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
@@ -13,10 +15,12 @@ namespace Plataforma.Core.Servicios
     public class DocenteTitulosServicio : IDocenteTitulosServicio
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly PaginationOptions _paginationOptions;
 
-        public DocenteTitulosServicio(IUnitOfWork unitOfWork)
+        public DocenteTitulosServicio(IUnitOfWork unitOfWork, IOptions<PaginationOptions> options)
         {
             _unitOfWork = unitOfWork;
+            _paginationOptions = options.Value;
         }
 
         
@@ -80,13 +84,15 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteTitulosRepositorio.GetPregrado(DocenteId);
         }
 
-        public IEnumerable<Pregrado> GetPregrados(PregradoQF pregradoqf)
+        public PagedList<Pregrado> GetPregrados(PregradoQF pregradoqf)
         {
             var query = _unitOfWork.DocenteTitulosRepositorio.GetPregrados();
             // Apply any filtering or sorting logic here if needed
-            
-            
-                if (!string.IsNullOrEmpty(pregradoqf.Titulo))
+            pregradoqf.PageNumber = pregradoqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : pregradoqf.PageNumber;
+            pregradoqf.PageSize = pregradoqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : pregradoqf.PageSize;
+
+
+            if (!string.IsNullOrEmpty(pregradoqf.Titulo))
                 {
                     query = query.Where(d => d.Titulo.Contains(pregradoqf.Titulo, StringComparison.OrdinalIgnoreCase));
                 }
@@ -98,8 +104,9 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.FechaFinalizacion == pregradoqf.FechaFinalizacion);
                 }
-            
-            return query.ToList();
+
+            var pagedPregrados = PagedList<Pregrado>.Create(query, pregradoqf.PageNumber, pregradoqf.PageSize);
+            return pagedPregrados;
         }
 
         public async Task<Especializacion> GetEspecializacion(long DocenteId)
@@ -107,13 +114,13 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteTitulosRepositorio.GetEspecializacion(DocenteId);
         }
 
-        public IEnumerable<Especializacion> GetEspecializaciones(EspecializacionQF especializacionqf)
+        public PagedList<Especializacion> GetEspecializaciones(EspecializacionQF especializacionqf)
         {
             var query = _unitOfWork.DocenteTitulosRepositorio.GetEspecializaciones();
             // Apply any filtering or sorting logic here if needed
-            if (especializacionqf != null)
-            {
-                if (!string.IsNullOrEmpty(especializacionqf.Titulo))
+            especializacionqf.PageNumber = especializacionqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : especializacionqf.PageNumber;
+            especializacionqf.PageSize = especializacionqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : especializacionqf.PageSize;
+            if (!string.IsNullOrEmpty(especializacionqf.Titulo))
                 {
                     query = query.Where(d => d.Titulo.Contains(especializacionqf.Titulo, StringComparison.OrdinalIgnoreCase));
                 }
@@ -125,8 +132,8 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.FechaFinalizacion == especializacionqf.FechaFinalizacion);
                 }
-            }
-            return query.ToList();
+            var pagedEspecializaciones = PagedList<Especializacion>.Create(query, especializacionqf.PageNumber, especializacionqf.PageSize);
+            return pagedEspecializaciones;
         }
 
         public async Task<Magister> GetMagister(long DocenteId)
@@ -134,13 +141,13 @@ namespace Plataforma.Core.Servicios
             return await _unitOfWork.DocenteTitulosRepositorio.GetMagister(DocenteId);
         }
 
-        public IEnumerable<Magister> GetMagisters(MagisterQF magisterqf)
+        public PagedList<Magister> GetMagisters(MagisterQF magisterqf)
         {
             var query = _unitOfWork.DocenteTitulosRepositorio.GetMagisters();
             // Apply any filtering or sorting logic here if needed
-            if (magisterqf != null)
-            {
-                if (!string.IsNullOrEmpty(magisterqf.Titulo))
+            magisterqf.PageNumber = magisterqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : magisterqf.PageNumber;
+            magisterqf.PageSize = magisterqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : magisterqf.PageSize;
+            if (!string.IsNullOrEmpty(magisterqf.Titulo))
                 {
                     query = query.Where(d => d.Titulo.Contains(magisterqf.Titulo, StringComparison.OrdinalIgnoreCase));
                 }
@@ -169,8 +176,9 @@ namespace Plataforma.Core.Servicios
                     query = query.Where(d => d.ResolucionConvalidacion.Contains(magisterqf.ResolucionConvalidacion, StringComparison.OrdinalIgnoreCase));
                 }
 
-            }
-            return query.ToList();
+            var pagedMagister = PagedList<Magister>.Create(query, magisterqf.PageNumber, magisterqf.PageSize);
+            return pagedMagister;
+            
         }
 
         public async Task<Doctorado> GetDoctorado(long DocenteId)
@@ -179,13 +187,14 @@ namespace Plataforma.Core.Servicios
 
         }
 
-        public IEnumerable<Doctorado> GetDoctorados(DoctoradoQF doctoradoqf)
+        public PagedList<Doctorado> GetDoctorados(DoctoradoQF doctoradoqf)
         {
             var query = _unitOfWork.DocenteTitulosRepositorio.GetDoctorados();
             // Apply any filtering or sorting logic here if needed
-            if (doctoradoqf != null)
-            {
-                if (!string.IsNullOrEmpty(doctoradoqf.Titulo))
+            doctoradoqf.PageNumber = doctoradoqf.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : doctoradoqf.PageNumber;
+            doctoradoqf.PageSize = doctoradoqf.PageSize == 0 ? _paginationOptions.DefaultPageSize : doctoradoqf.PageSize;
+
+            if (!string.IsNullOrEmpty(doctoradoqf.Titulo))
                 {
                     query = query.Where(d => d.Titulo.Contains(doctoradoqf.Titulo, StringComparison.OrdinalIgnoreCase));
                 }
@@ -214,11 +223,12 @@ namespace Plataforma.Core.Servicios
                 {
                     query = query.Where(d => d.ResolucionConvalidacion.Contains(doctoradoqf.ResolucionConvalidacion, StringComparison.OrdinalIgnoreCase));
                 }
-            }
-            return query.ToList();
+            var pagedDoctorado = PagedList<Doctorado>.Create(query, doctoradoqf.PageNumber, doctoradoqf.PageSize);
+            return pagedDoctorado;
+
         }
 
-  
+
         // INSERTAR
 
         public async Task InsertarDoctorado(Doctorado doctorado)

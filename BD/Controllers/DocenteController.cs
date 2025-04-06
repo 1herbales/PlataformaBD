@@ -8,19 +8,24 @@ using Plataforma.Core.QueryFilters;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Linq;
+using Plataforma.Core.CustomEntities;
+using Plataforma.Infrastructure.Interfaces;
+
 
 
 namespace BD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocenteController(IDocenteServicio docenteServicio, IMapper mapper) : Controller
+    public class DocenteController(IDocenteServicio docenteServicio, IMapper mapper, IUriService uriService) : Controller
     {
         private readonly IDocenteServicio _docenteServicio = docenteServicio;
         private readonly IMapper _mapper = mapper;
+        private readonly IUriService _uriService = uriService;
 
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetDocentes))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         
@@ -28,16 +33,22 @@ namespace BD.Controllers
         {
             var Docentes = _docenteServicio.GetDocentes(docenteqf);
             var docentesDTOS = _mapper.Map<IEnumerable<DocenteDTO>>(Docentes);
-            var response = new ApiResponse<IEnumerable<DocenteDTO>>(docentesDTOS);
-            var metadata = new
+            var metadata = new Metadata
             {
-                Docentes.TotalCount,
-                Docentes.PageSize,
-                Docentes.PageNumber,
-                Docentes.TotalPages,
-                Docentes.HasNext,
-                Docentes.HasPrevious
+                TotalCount = Docentes.TotalCount,
+                PageSize = Docentes.PageSize,
+                PageNumber = Docentes.PageNumber,
+                TotalPages = Docentes.TotalPages,
+                HasNext = Docentes.HasNext,
+                HasPrevious = Docentes.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(docenteqf, Url.RouteUrl(nameof(GetDocentes))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(docenteqf, Url.RouteUrl(nameof(GetDocentes))).ToString(),
 
+            };
+
+            var response = new ApiResponse<IEnumerable<DocenteDTO>>(docentesDTOS)
+            {
+                Meta = metadata
             };
             Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);

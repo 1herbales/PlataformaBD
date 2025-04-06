@@ -2,22 +2,25 @@
 using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
+using Plataforma.Infrastructure.Interfaces;
 
 namespace BD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProduccionAcademicaController(IDocentePlantumServicio docentePlantumServicio, IMapper mapper) : Controller
+    public class ProduccionAcademicaController(IDocentePlantumServicio docentePlantumServicio, IMapper mapper, IUriService uriService) : Controller
     {
         private readonly IDocentePlantumServicio _docentePlantumServicio = docentePlantumServicio;
         private readonly IMapper _mapper = mapper;
+        private readonly IUriService _uriService = uriService;
 
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetProducciones))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
 
@@ -25,16 +28,22 @@ namespace BD.Controllers
         {
             var Producciones = _docentePlantumServicio.GetProducciones(produccionAcademicaqf);
             var produccionesDTOS = _mapper.Map<IEnumerable<ProduccionAcademicaDTO>>(Producciones);
-            var response = new ApiResponse<IEnumerable<ProduccionAcademicaDTO>>(produccionesDTOS);
-            var metadata = new
+            var metadata = new Metadata
             {
-                Producciones.TotalCount,
-                Producciones.PageSize,
-                Producciones.PageNumber,
-                Producciones.TotalPages,
-                Producciones.HasNext,
-                Producciones.HasPrevious
+                TotalCount = Producciones.TotalCount,
+                PageSize = Producciones.PageSize,
+                PageNumber = Producciones.PageNumber,
+                TotalPages = Producciones.TotalPages,
+                HasNext = Producciones.HasNext,
+                HasPrevious = Producciones.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(produccionAcademicaqf, Url.RouteUrl(nameof(GetProducciones))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(produccionAcademicaqf, Url.RouteUrl(nameof(GetProducciones))).ToString(),
 
+            };
+
+            var response = new ApiResponse<IEnumerable<ProduccionAcademicaDTO>>(produccionesDTOS)
+            {
+                Meta = metadata
             };
             Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);

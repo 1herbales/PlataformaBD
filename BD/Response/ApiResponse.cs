@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Plataforma.Core.CustomEntities;
 
 namespace BD.Response
 {
@@ -11,6 +12,8 @@ namespace BD.Response
         }
 
         public T Data { get; set; }
+
+        public Metadata Meta { get; set; }
 
     }
 }

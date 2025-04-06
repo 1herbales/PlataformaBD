@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plataforma.Core.QueryFilters
 {
-    public class DocenteDatosPersonaleQF
+    public class DocenteDatosPersonaleQF : QueryFiltersBase
     {
         public DateOnly FechaNacimiento { get; set; }
 
@@ -24,8 +24,7 @@ namespace Plataforma.Core.QueryFilters
 
         public string NumeroContacto { get; set; } = null!;
 
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+      
 
     }
 }

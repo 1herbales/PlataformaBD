@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plataforma.Core.QueryFilters
 {
-     public class DocenteQF
+     public class DocenteQF : QueryFiltersBase
     {
         public string? Apellidos { get; set; } 
 
@@ -18,8 +18,6 @@ namespace Plataforma.Core.QueryFilters
 
         public string? EmailInstitucional { get; set; }
 
-        public int PageNumber { get; set; } 
-        public int PageSize { get; set; } 
 
 
     }

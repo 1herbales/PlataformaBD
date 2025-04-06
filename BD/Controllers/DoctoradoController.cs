@@ -2,39 +2,48 @@
 using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
 using Plataforma.Core.Servicios;
+using Plataforma.Infrastructure.Interfaces;
 
 namespace BD.Controllers
 
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DoctoradoController(IDocenteTitulosServicio docenteTitulosServicio, IMapper mapper) : Controller
+    public class DoctoradoController(IDocenteTitulosServicio docenteTitulosServicio, IMapper mapper, IUriService uriService) : Controller
     {
         private readonly IDocenteTitulosServicio _docenteTitulosServicio = docenteTitulosServicio;
         private readonly IMapper _mapper = mapper;
+        private readonly IUriService _uriService = uriService;
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetDoctorados))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult GetDoctorados([FromQuery] DoctoradoQF doctoradoqf)
         {
             var Doctorados = _docenteTitulosServicio.GetDoctorados(doctoradoqf);
             var doctoradosDTOS = _mapper.Map<IEnumerable<DoctoradoDTO>>(Doctorados);
-            var response = new ApiResponse<IEnumerable<DoctoradoDTO>>(doctoradosDTOS);
-            var metadata = new
+            var metadata = new Metadata
             {
-                Doctorados.TotalCount,
-                Doctorados.PageSize,
-                Doctorados.PageNumber,
-                Doctorados.TotalPages,
-                Doctorados.HasNext,
-                Doctorados.HasPrevious
+                TotalCount = Doctorados.TotalCount,
+                PageSize = Doctorados.PageSize,
+                PageNumber = Doctorados.PageNumber,
+                TotalPages = Doctorados.TotalPages,
+                HasNext = Doctorados.HasNext,
+                HasPrevious = Doctorados.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(doctoradoqf, Url.RouteUrl(nameof(GetDoctorados))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(doctoradoqf, Url.RouteUrl(nameof(GetDoctorados))).ToString(),
 
+            };
+
+            var response = new ApiResponse<IEnumerable<DoctoradoDTO>>(doctoradosDTOS)
+            {
+                Meta = metadata
             };
             Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plataforma.Core.QueryFilters
 {
-    public class ProduccionAcademicaQF
+    public class ProduccionAcademicaQF : QueryFiltersBase
     {
         public string? ActaNumero { get; set; }
 
@@ -34,7 +34,6 @@ namespace Plataforma.Core.QueryFilters
 
         public string? Observaciones { get; set; }
 
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+       
     }
 }

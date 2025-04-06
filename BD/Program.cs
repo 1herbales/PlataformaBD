@@ -6,6 +6,9 @@ using Plataforma.Infrastructure.Datos;
 using Plataforma.Infrastructure.Filtros;
 using Plataforma.Infrastructure.Repositorios;
 using Plataforma.Core.Servicios;
+using Plataforma.Infrastructure.Interfaces;
+using Plataforma.Infrastructure.Servicios;
+using Plataforma.Core.CustomEntities;
 
 
 
@@ -17,6 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<UniversidadContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("universidad")));
 
+
 builder.Services.AddTransient<IDocenteServicio, DocenteServicio>();
 builder.Services.AddTransient<IDocenteRepositorio, DocenteRepository>();
 
@@ -27,8 +31,15 @@ builder.Services.AddTransient<IDocenteTitulosRepositorio, DocenteTitulosReposito
 builder.Services.AddTransient<IDocenteTitulosServicio, DocenteTitulosServicio>();
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddSingleton<IUriService>(o =>
+{
+    var accessor = o.GetRequiredService<IHttpContextAccessor>();
+    var request = accessor.HttpContext.Request;
+    var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+    return new UriService(uri);
+});
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.Configure<PaginationOptions>(builder.Configuration.GetSection("Pagination"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
@@ -36,6 +47,10 @@ builder.Services.AddMvc(options =>
 {
     options.Filters.Add(new FiltroValidacion());
 
+}).AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 });
 
 builder.Services.AddFluentValidationAutoValidation();

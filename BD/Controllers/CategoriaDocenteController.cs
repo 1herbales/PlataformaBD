@@ -2,39 +2,49 @@
 using AutoMapper;
 using BD.Response;
 using Microsoft.AspNetCore.Mvc;
+using Plataforma.Core.CustomEntities;
 using Plataforma.Core.DTOs;
 using Plataforma.Core.Entidades;
 using Plataforma.Core.Interfaces;
 using Plataforma.Core.QueryFilters;
+using Plataforma.Infrastructure.Interfaces;
+using Plataforma.Infrastructure.Servicios;
 
 
 namespace BD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriaDocenteController(IDocentePlantumServicio docentePlantumServicio, IMapper mapper) : Controller
+    public class CategoriaDocenteController(IDocentePlantumServicio docentePlantumServicio, IMapper mapper, IUriService uriService) : Controller
     {
         private readonly IDocentePlantumServicio _docentePlantumServicio = docentePlantumServicio;
         private readonly IMapper _mapper = mapper;
+        private readonly IUriService _uriService = uriService;
 
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetCategorias))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult GetCategorias([FromQuery] CategoriaDocenteQF categoriaDocenteqf)
         {
             var Categorias =  _docentePlantumServicio.GetCategorias(categoriaDocenteqf);
             var categoriasDTOS = _mapper.Map<IEnumerable<CategoriaDocenteDTO>>(Categorias);
-            var response = new ApiResponse<IEnumerable<CategoriaDocenteDTO>>(categoriasDTOS);
-            var metadata = new
+            var metadata = new Metadata
             {
-                Categorias.TotalCount,
-                Categorias.PageSize,
-                Categorias.PageNumber,
-                Categorias.TotalPages,
-                Categorias.HasNext,
-                Categorias.HasPrevious
+                TotalCount = Categorias.TotalCount,
+                PageSize = Categorias.PageSize,
+                PageNumber = Categorias.PageNumber,
+                TotalPages = Categorias.TotalPages,
+                HasNext = Categorias.HasNext,
+                HasPrevious = Categorias.HasPrevious,
+                NextPageUrl = _uriService.GetPaginationUri(categoriaDocenteqf, Url.RouteUrl(nameof(GetCategorias))).ToString(),
+                PreviousPageUrl = _uriService.GetPaginationUri(categoriaDocenteqf, Url.RouteUrl(nameof(GetCategorias))).ToString(),
 
+            };
+
+            var response = new ApiResponse<IEnumerable<CategoriaDocenteDTO>>(categoriasDTOS)
+            {
+                Meta = metadata
             };
             Response.Headers.Append("X-Pagination", Newtonsoft.Json.JsonConvert.SerializeObject(metadata));
             return Ok(response);
