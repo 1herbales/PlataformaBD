@@ -9,6 +9,9 @@ using Plataforma.Core.Servicios;
 using Plataforma.Infrastructure.Interfaces;
 using Plataforma.Infrastructure.Servicios;
 using Plataforma.Core.CustomEntities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
@@ -42,8 +45,30 @@ builder.Services.AddSingleton<IUriService>(o =>
 builder.Services.Configure<PaginationOptions>(builder.Configuration.GetSection("Pagination"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddAuthentication(
+    options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(
+    options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+    };
+});
 
-builder.Services.AddMvc(options =>
+
+
+
+builder.Services.AddMvc(options =>                
 {
     options.Filters.Add(new FiltroValidacion());
 
@@ -69,10 +94,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Plataforma API V1");
+        options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root 
+        
+    }
+        );
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

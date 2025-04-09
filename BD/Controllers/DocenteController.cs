@@ -11,11 +11,13 @@ using System.Net;
 using System.Linq;
 using Plataforma.Core.CustomEntities;
 using Plataforma.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 
 
 namespace BD.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DocenteController(IDocenteServicio docenteServicio, IMapper mapper, IUriService uriService) : Controller
@@ -24,10 +26,12 @@ namespace BD.Controllers
         private readonly IMapper _mapper = mapper;
         private readonly IUriService _uriService = uriService;
 
-
+        // GET: api/<DocenteController>
+                                                                    
         [HttpGet(Name = nameof(GetDocentes))]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
         
         public IActionResult GetDocentes([FromQuery] DocenteQF docenteqf)
         {
